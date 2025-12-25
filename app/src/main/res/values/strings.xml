@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Sample App</string>
+    <string name="welcome_msg">Welcome to Sample One</string>
+    <string name="title_activity_otp">OtpActivity</string>
+    <string name="outgoing">Outgoing</string>
+    <string name="missed">Missed</string>
+    <string name="incoming">Incoming</string>
+    <string name="forwarded">Forwarded</string>
+    <string name="rejected">Rejected</string>
+    <string name="enter_verify_code">Please enter the verification code sent to</string>
+    <string name="call_log">Call Log</string>
+    <string name="logout">Logout</string>
+</resources>

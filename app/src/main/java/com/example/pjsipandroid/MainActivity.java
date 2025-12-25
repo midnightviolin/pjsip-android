@@ -1,0 +1,206 @@
+package com.example.pjsipandroid;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+
+
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.Manifest;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.Toast;
+
+import com.permissionx.guolindev.PermissionX;
+import com.permissionx.guolindev.callback.RequestCallback;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity {
+
+    String authToken;
+    ImageButton imageButton;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_main);
+
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
+        if(ServiceCommunicator.callIsActive){
+            Intent intent = new Intent(MainActivity.this, CallsActivity.class);
+            intent.putExtra("call", "none");
+            startActivity(intent);
+        }
+
+        imageButton = findViewById(R.id.imageButton);
+
+        PermissionX.init(this)
+                .permissions(Manifest.permission.RECORD_AUDIO,
+                        Manifest.permission.MODIFY_AUDIO_SETTINGS,
+                        Manifest.permission.READ_PHONE_STATE,
+                        Manifest.permission.SYSTEM_ALERT_WINDOW)
+                .request(new RequestCallback() {
+                    @Override
+                    public void onResult(boolean allGranted, @NonNull List<String> grantedList, @NonNull List<String> deniedList) {
+                        if (allGranted) {
+                            Toast.makeText(MainActivity.this, "All permissions are granted", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
+        ServiceCommunicator.itemList = new ArrayList<>();
+        ServiceCommunicator.transferList = new ArrayList<>();
+
+        SharedPreferences shared = getSharedPreferences("USER_DATA", MODE_PRIVATE);
+        authToken = shared.getString("token", "");
+
+        //System.out.print("token  " + authToken);
+
+        if(!authToken.isEmpty()){
+            imageButton.setVisibility(View.GONE);
+            //Retrofit retrofit = RetrofitData.getRetrofit();
+            //retrofitAPI = retrofit.create(PressOneAPI.class);
+            //getBusinessNumbers();
+        }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        moveTaskToBack(true);
+    }
+
+    public void initialLoginClick(View view) {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+    }
+
+    private void getBusinessNumbers(){
+
+        SharedPreferences shared = getSharedPreferences("USER_DATA", MODE_PRIVATE);
+        String token = shared.getString("token", "");
+
+        //System.out.println("token " + token);
+
+        //Call<UserDatum> call = retrofitAPI.getBusinessNumbers("Bearer " + token);
+
+//        call.enqueue(new Callback<UserDatum>() {
+//            @Override
+//            public void onResponse(Call<UserDatum> call, Response<UserDatum> response) {
+//
+//                userDatum = response.body();
+//                if(userDatum != null) {
+//                    businessNumbers = userDatum.getBusinessNumbers();
+//                }
+//                if(businessNumbers.size() != 0 && businessNumbers.get(0) != null && (businessNumbers.get(0).getPhoneNumber() != null && !businessNumbers.get(0).getPhoneNumber().isEmpty())) {
+//                    ServiceCommunicator.arraySpinner = new String[businessNumbers.size()];
+//                    for(int i = 0; i < businessNumbers.size(); i++){
+//                        ServiceCommunicator.arraySpinner[i] = businessNumbers.get(i).getPhoneNumber();
+//                        ServiceCommunicator.map.put(businessNumbers.get(i).getPhoneNumber(), businessNumbers.get(i));
+//                    }
+//                    ServiceCommunicator.apiHasRetrievedNumbers = true;
+//                    ParentItemList();
+//                }
+//                else{
+//                    ServiceCommunicator.arraySpinner = new String[]{"No Business Number Found"};
+//                    ParentItemList();
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<UserDatum> call, Throwable t) {
+//            }
+//        });
+
+
+    }
+    private void ParentItemList()
+    {
+//        ServiceCommunicator.itemList.clear();
+//        SharedPreferences shared = getSharedPreferences("USER_DATA", MODE_PRIVATE);
+//        String token = shared.getString("token", "");
+//        Intent intent = new Intent(MainActivity.this, CallsActivity.class);
+//        intent.putExtra("call", "none");
+//
+//        if(apiHasRetrievedNumbers && arraySpinner != null && arraySpinner.length > 0) {
+//            Call<CallLogs> call = retrofitAPI.getCallsData("Bearer " + token, ServiceCommunicator.map.values().iterator().next().getId().toString());
+//
+//            call.enqueue(new Callback<CallLogs>() {
+//                @Override
+//                public void onResponse(Call<CallLogs> call, Response<CallLogs> response) {
+//
+//                    List<Result> callsEndDatumList = response.body().getResults();
+//
+//                        if (callsEndDatumList != null && callsEndDatumList.size() > 0) {
+//
+//                            final Map<String, TemporalAdjuster> ADJUSTERS = new HashMap<>();
+//
+//                            ADJUSTERS.put("day", TemporalAdjusters.ofDateAdjuster(d -> d));
+//
+//                            List<ChildItem> childList = new ArrayList<>();
+//
+//                            for (Result callsEndDatum : callsEndDatumList) {
+//                                childList.add(new ChildItem(callsEndDatum.getCallerId(), getCallerId(callsEndDatum), getCallType(callsEndDatum), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss").format(LocalDateTime.parse(callsEndDatum.getDateCreated(), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSxxx")))));
+//                            }
+//
+//
+//                            Map<LocalDate, List<ChildItem>> result = childList.stream()
+//                                    .collect(Collectors.groupingBy(item -> LocalDate.parse(item.getChildItemTxt(), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
+//                                            .with(ADJUSTERS.get("day"))));
+//
+//                            result.entrySet().forEach(x -> ServiceCommunicator.itemList.add(new ParentItem(DateTimeFormatter.ofPattern("dd-MMM-yyyy").format(x.getKey()), x.getValue())));
+//                            intent.putExtra("call", "data");
+//                        }
+//
+//                }
+//
+//                @Override
+//                public void onFailure(Call<CallLogs> call, Throwable t) {
+//
+//                }
+//            });
+//
+//        }
+//
+//        startActivity(intent);
+
+    }
+
+//    private String getCallerId(Result callsEndDatum) {
+//        String callerId = null;
+//
+//        callerId = callsEndDatum.getUser();
+//
+//        if(callerId.isEmpty()){
+//            callerId = callsEndDatum.getCallerId();
+//        }
+//        return callerId;
+//    }
+//    private int getCallType(Result datum){
+//
+//        int toReturn = 0;
+//
+//        if(datum.getIsDialed()){
+//            toReturn = 0; // outgoing
+//        } else if (datum.getIsMissedCall()) {
+//            toReturn = 1; // missed
+//        } else if (!datum.getIsDialed()) {
+//            toReturn = 2; //incoming
+//        } else if (!datum.getIsForwardedCall()) {
+//            toReturn = 3; //forwarded
+//        } else if (!datum.getIsDialed() && datum.getIsMissedCall()) {
+//            toReturn = 4; //rejected
+//        }
+//
+//        return toReturn;
+//    }
+}

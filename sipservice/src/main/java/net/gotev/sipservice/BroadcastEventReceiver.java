@@ -104,7 +104,7 @@ public class BroadcastEventReceiver extends BroadcastReceiver implements SipServ
         }
     }
 
-    protected Context getReceiverContext() {
+    public Context getReceiverContext() {
         return receiverContext;
     }
 
